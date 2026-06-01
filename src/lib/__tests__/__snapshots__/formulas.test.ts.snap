@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`percentageRows is a pure snapshot at a known 1RM (100, metric increment) 1`] = `
+[
+  {
+    "exact": 35,
+    "pct": 35,
+    "rounded": 35,
+  },
+  {
+    "exact": 40,
+    "pct": 40,
+    "rounded": 40,
+  },
+  {
+    "exact": 45,
+    "pct": 45,
+    "rounded": 45,
+  },
+  {
+    "exact": 50,
+    "pct": 50,
+    "rounded": 50,
+  },
+  {
+    "exact": 55,
+    "pct": 55,
+    "rounded": 55,
+  },
+  {
+    "exact": 60,
+    "pct": 60,
+    "rounded": 60,
+  },
+  {
+    "exact": 65,
+    "pct": 65,
+    "rounded": 65,
+  },
+  {
+    "exact": 70,
+    "pct": 70,
+    "rounded": 70,
+  },
+  {
+    "exact": 75,
+    "pct": 75,
+    "rounded": 75,
+  },
+  {
+    "exact": 80,
+    "pct": 80,
+    "rounded": 80,
+  },
+  {
+    "exact": 85,
+    "pct": 85,
+    "rounded": 85,
+  },
+  {
+    "exact": 90,
+    "pct": 90,
+    "rounded": 90,
+  },
+  {
+    "exact": 95,
+    "pct": 95,
+    "rounded": 95,
+  },
+  {
+    "exact": 100,
+    "pct": 100,
+    "rounded": 100,
+  },
+]
+`;
