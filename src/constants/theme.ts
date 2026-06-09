@@ -82,3 +82,10 @@ export const FontSize = {
 
 /** Minimum tap target (PRD: fat-finger tolerance, 48pt min). */
 export const MinTapTarget = 48;
+
+/**
+ * Max content width. On tablets/iPad the single-column layout is capped and
+ * centered so lines don't stretch uncomfortably wide (PRD §iPad: "feel
+ * comfortable, not cramped"). Phones are narrower than this, so it's a no-op there.
+ */
+export const ContentMaxWidth = 640;

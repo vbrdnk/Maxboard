@@ -43,5 +43,16 @@ export default function TabsLayout() {
 }
 
 function TabGlyph({ color, char }: { color: ColorValue; char: string }) {
-  return <Text style={{ color, fontSize: FontSize.title }}>{char}</Text>;
+  // Decorative icon — the tab's title carries the accessible label, and we don't
+  // let the glyph font-scale (it would distort the fixed-height tab bar).
+  return (
+    <Text
+      allowFontScaling={false}
+      importantForAccessibility="no"
+      accessibilityElementsHidden
+      style={{ color, fontSize: FontSize.title }}
+    >
+      {char}
+    </Text>
+  );
 }

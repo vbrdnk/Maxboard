@@ -1,6 +1,7 @@
 import { buildPresetExercises, PRESET_EXERCISE_NAMES } from '@/lib/presets';
 import {
   currentOneRm,
+  progressSeries,
   useStore,
   visibleExercisesSorted,
 } from '@/lib/storage';
@@ -110,5 +111,45 @@ describe('visibleExercisesSorted', () => {
     ];
     const sorted = visibleExercisesSorted(exercises, entries);
     expect(sorted.map((e) => e.id)).toEqual(['hasData', 'empty']);
+  });
+});
+
+describe('progressSeries', () => {
+  const ex = (id: string, hidden = false): Exercise => ({
+    id,
+    name: id,
+    createdAt: '2026-01-01',
+    sortOrder: 0,
+    isPreset: false,
+    hidden,
+  });
+
+  it('excludes exercises with fewer than 2 points and hidden ones', () => {
+    const exercises = [ex('one'), ex('two'), ex('hid', true)];
+    const entries: PREntry[] = [
+      { id: '1', exerciseId: 'one', weight: 100, unit: 'lbs', date: '2026-01-01', source: 'direct' },
+      { id: '2', exerciseId: 'two', weight: 100, unit: 'lbs', date: '2026-01-01', source: 'direct' },
+      { id: '3', exerciseId: 'two', weight: 110, unit: 'lbs', date: '2026-02-01', source: 'direct' },
+      { id: '4', exerciseId: 'hid', weight: 50, unit: 'lbs', date: '2026-01-01', source: 'direct' },
+      { id: '5', exerciseId: 'hid', weight: 60, unit: 'lbs', date: '2026-02-01', source: 'direct' },
+    ];
+    const series = progressSeries(exercises, entries, 'lbs');
+    expect(series.map((s) => s.exercise.id)).toEqual(['two']);
+  });
+
+  it('normalizes weights to the display unit and sorts points oldest-first', () => {
+    const exercises = [ex('x')];
+    const entries: PREntry[] = [
+      { id: 'b', exerciseId: 'x', weight: 100, unit: 'kg', date: '2026-02-01', source: 'direct' },
+      { id: 'a', exerciseId: 'x', weight: 200, unit: 'lbs', date: '2026-01-01', source: 'direct' },
+    ];
+    const [s] = progressSeries(exercises, entries, 'lbs');
+    // oldest first: 200 lbs then 100 kg (~220.46 lbs)
+    expect(s.points[0].weight).toBeCloseTo(200, 5);
+    expect(s.points[1].weight).toBeCloseTo(220.462, 3);
+    expect(s.current).toBeCloseTo(220.462, 3);
+    expect(s.allTimePR).toBeCloseTo(220.462, 3);
+    expect(s.totalGain).toBeCloseTo(20.462, 3);
+    expect(s.prCount).toBe(2);
   });
 });

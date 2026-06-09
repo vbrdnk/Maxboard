@@ -13,9 +13,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { genId, roundingIncrementFor } from '@/lib/formulas';
+import { convert, genId, roundingIncrementFor } from '@/lib/formulas';
 import { buildPresetExercises } from '@/lib/presets';
-import type { Exercise, PREntry, UnitSystem, UserSettings } from '@/lib/types';
+import type { Exercise, PREntry, Unit, UnitSystem, UserSettings } from '@/lib/types';
 
 const STORAGE_KEY = 'maxboard-store-v1';
 
@@ -214,4 +214,60 @@ export function visibleExercisesSorted(
 /** Hidden exercises (for the settings "Manage Exercises" section). */
 export function hiddenExercises(exercises: Exercise[]): Exercise[] {
   return exercises.filter((e) => e.hidden);
+}
+
+/** One plotted point: epoch-ms timestamp (x) + weight in the display unit (y). */
+export type ProgressPoint = { t: number; weight: number };
+
+/** Progress data + summary stats for one exercise, in the display unit. */
+export type ProgressSeries = {
+  exercise: Exercise;
+  points: ProgressPoint[];
+  /** Most recent entry's weight (display unit). */
+  current: number;
+  /** Heaviest weight ever (display unit). */
+  allTimePR: number;
+  /** current − first entry (display unit); can be negative. */
+  totalGain: number;
+  /** Number of logged PRs. */
+  prCount: number;
+};
+
+/**
+ * Build per-exercise progress series for the chart (PRD §Progress). Each entry's
+ * weight is normalized to `displayUnit` at read time (stored values untouched),
+ * points sorted oldest→newest. Only visible exercises with at least `minPoints`
+ * entries are returned (default 2 — a line needs two points).
+ */
+export function progressSeries(
+  exercises: Exercise[],
+  entries: PREntry[],
+  displayUnit: Unit,
+  minPoints = 2,
+): ProgressSeries[] {
+  return exercises
+    .filter((e) => !e.hidden)
+    .map((exercise): ProgressSeries | null => {
+      const points = entries
+        .filter((en) => en.exerciseId === exercise.id)
+        .map((en) => ({
+          t: new Date(en.date).getTime(),
+          weight: convert(en.weight, en.unit, displayUnit),
+        }))
+        .sort((a, b) => a.t - b.t);
+
+      if (points.length < minPoints) return null;
+
+      const weights = points.map((p) => p.weight);
+      const current = weights[weights.length - 1];
+      return {
+        exercise,
+        points,
+        current,
+        allTimePR: Math.max(...weights),
+        totalGain: current - weights[0],
+        prCount: points.length,
+      };
+    })
+    .filter((s): s is ProgressSeries => s !== null);
 }
