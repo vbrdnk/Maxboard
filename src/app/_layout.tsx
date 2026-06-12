@@ -44,6 +44,16 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.bg } }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
+            <Stack.Screen
+              name="settings"
+              options={{
+                presentation: 'formSheet',
+                sheetAllowedDetents: [0.5, 1],
+                sheetGrabberVisible: true,
+                sheetCornerRadius: 24,
+                contentStyle: { backgroundColor: Colors.card },
+              }}
+            />
           </Stack>
         </ThemeProvider>
       </SafeAreaProvider>

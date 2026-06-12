@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { SymbolView } from 'expo-symbols';
 import { useMemo, useState } from 'react';
@@ -7,7 +8,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AddExerciseForm } from '@/components/AddExerciseForm';
 import { ExerciseCard } from '@/components/ExerciseCard';
 import { ExerciseHistory } from '@/components/ExerciseHistory';
-import { SettingsSheet } from '@/components/SettingsSheet';
 import {
   Colors,
   ContentMaxWidth,
@@ -33,7 +33,6 @@ export default function LiftsScreen() {
 
   const [openId, setOpenId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const visible = useMemo(
     () => visibleExercisesSorted(exercises, entries),
@@ -84,7 +83,7 @@ export default function LiftsScreen() {
           </Pressable>
           <Pressable
             style={styles.iconButton}
-            onPress={() => setSettingsOpen(true)}
+            onPress={() => router.push('/settings')}
             accessibilityRole="button"
             accessibilityLabel="Settings"
           >
@@ -123,7 +122,6 @@ export default function LiftsScreen() {
         unitSystem={unitSystem}
         onClose={() => setAddOpen(false)}
       />
-      <SettingsSheet visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </SafeAreaView>
   );
 }
