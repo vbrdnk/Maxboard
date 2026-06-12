@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { PREntryForm, type PRFormResult } from '@/components/PREntryForm';
 import {
@@ -71,7 +71,7 @@ export function ExerciseHistory({
         <Text style={styles.empty}>No PRs logged yet.</Text>
       ) : (
         mine.map((entry) => (
-          <Swipeable
+          <ReanimatedSwipeable
             key={entry.id}
             renderRightActions={() => (
               <Pressable
@@ -102,7 +102,7 @@ export function ExerciseHistory({
               <Text style={styles.entryDate}>{fmtDate(entry.date)}</Text>
               {entry.notes ? <Text style={styles.entryNotes}>{entry.notes}</Text> : null}
             </View>
-          </Swipeable>
+          </ReanimatedSwipeable>
         ))
       )}
 

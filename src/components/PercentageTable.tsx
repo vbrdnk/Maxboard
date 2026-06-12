@@ -1,14 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { UnitToggle } from '@/components/UnitToggle';
 import { Colors, Fonts, FontSize, Spacing } from '@/constants/theme';
-import {
-  convert,
-  displayUnitFor,
-  percentageRows,
-  roundingIncrementFor,
-} from '@/lib/formulas';
+import { convert, displayUnitFor, percentageRows } from '@/lib/formulas';
 import type { Unit, UnitSystem } from '@/lib/types';
 
 /** Percentages rendered in the accent color — the heavy sets you care about. */
@@ -45,9 +40,13 @@ export function PercentageTable({
   // The toggle is a per-view override, but a change to the *global* unit system
   // (e.g. in Settings) should resync this table even while it's open — otherwise
   // the 1RM header updates and the table doesn't until it's closed and reopened.
-  useEffect(() => {
+  // Adjust during render rather than in an effect (React's "store info from
+  // previous renders" pattern) — no cascading re-render, no effect needed.
+  const [prevUnitSystem, setPrevUnitSystem] = useState(unitSystem);
+  if (unitSystem !== prevUnitSystem) {
+    setPrevUnitSystem(unitSystem);
     setDisplayUnit(displayUnitFor(unitSystem));
-  }, [unitSystem]);
+  }
 
   const increment = displayUnit === 'lbs' ? 2.5 : 1;
   const oneRmDisplayed = convert(oneRm, oneRmUnit, displayUnit);
