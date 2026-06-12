@@ -1,5 +1,10 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from 'react-native-reanimated';
 
 import { PercentageTable } from '@/components/PercentageTable';
 import {
@@ -11,6 +16,7 @@ import {
   Radius,
   Spacing,
 } from '@/constants/theme';
+import { convert, displayUnitFor } from '@/lib/formulas';
 import type { Exercise, PREntry, UnitSystem } from '@/lib/types';
 
 type CardTab = 'percentages' | 'history';
@@ -51,8 +57,15 @@ export function ExerciseCard({
 }) {
   const [tab, setTab] = useState<CardTab>('percentages');
 
+  // The collapsed 1RM is shown in the user's current display unit. The entry is
+  // stored in its own unit; convert at render time (stored value never mutated,
+  // always from the original unit → idempotent). The HISTORY tab still shows each
+  // entry as-entered, and PercentageTable converts the raw 1RM itself.
+  const displayUnit = displayUnitFor(unitSystem);
+  const oneRmDisplay = oneRm ? convert(oneRm.weight, oneRm.unit, displayUnit) : null;
+
   return (
-    <View style={styles.card}>
+    <Animated.View style={styles.card} layout={LinearTransition}>
       <Pressable
         style={styles.header}
         onPress={onToggle}
@@ -60,15 +73,15 @@ export function ExerciseCard({
         accessibilityRole="button"
         accessibilityState={{ expanded }}
         accessibilityLabel={`${exercise.name}, ${
-          oneRm ? `${fmt(oneRm.weight)} ${oneRm.unit}` : 'no data'
+          oneRmDisplay !== null ? `${fmt(oneRmDisplay)} ${displayUnit}` : 'no data'
         }, ${entryCount} ${entryCount === 1 ? 'entry' : 'entries'}`}
       >
         <View style={styles.headerLeft}>
           <Text style={styles.name}>{exercise.name.toUpperCase()}</Text>
-          {oneRm ? (
+          {oneRmDisplay !== null ? (
             <Text style={styles.oneRm}>
-              {fmt(oneRm.weight)}
-              <Text style={styles.unit}> {oneRm.unit}</Text>
+              {fmt(oneRmDisplay)}
+              <Text style={styles.unit}> {displayUnit}</Text>
             </Text>
           ) : (
             <Text style={styles.empty}>—</Text>
@@ -83,7 +96,11 @@ export function ExerciseCard({
       </Pressable>
 
       {expanded && (
-        <View style={styles.body}>
+        <Animated.View
+          style={styles.body}
+          entering={FadeIn.duration(180)}
+          exiting={FadeOut.duration(120)}
+        >
           <View style={styles.tabs}>
             {(['percentages', 'history'] as const).map((t) => {
               const active = t === tab;
@@ -118,9 +135,9 @@ export function ExerciseCard({
           ) : (
             historyContent ?? <Text style={styles.placeholder}>No history yet.</Text>
           )}
-        </View>
+        </Animated.View>
       )}
-    </View>
+    </Animated.View>
   );
 }
 

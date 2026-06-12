@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { UnitToggle } from '@/components/UnitToggle';
 import { Colors, Fonts, FontSize, Spacing } from '@/constants/theme';
 import {
   convert,
+  displayUnitFor,
   percentageRows,
   roundingIncrementFor,
 } from '@/lib/formulas';
@@ -38,8 +39,15 @@ export function PercentageTable({
   unitSystem: UnitSystem;
 }) {
   const [displayUnit, setDisplayUnit] = useState<Unit>(
-    unitSystem === 'imperial' ? 'lbs' : 'kg',
+    displayUnitFor(unitSystem),
   );
+
+  // The toggle is a per-view override, but a change to the *global* unit system
+  // (e.g. in Settings) should resync this table even while it's open — otherwise
+  // the 1RM header updates and the table doesn't until it's closed and reopened.
+  useEffect(() => {
+    setDisplayUnit(displayUnitFor(unitSystem));
+  }, [unitSystem]);
 
   const increment = displayUnit === 'lbs' ? 2.5 : 1;
   const oneRmDisplayed = convert(oneRm, oneRmUnit, displayUnit);

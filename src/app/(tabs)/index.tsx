@@ -1,3 +1,4 @@
+import { SymbolView } from 'expo-symbols';
 import { useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -70,7 +71,12 @@ export default function LiftsScreen() {
             accessibilityRole="button"
             accessibilityLabel="Add exercise"
           >
-            <Text style={styles.iconPlus}>+</Text>
+            <SymbolView
+              name={{ ios: 'plus', android: 'add', web: 'add' }}
+              size={28}
+              tintColor={Colors.accent}
+              weight="bold"
+            />
           </Pressable>
           <Pressable
             style={styles.iconButton}
@@ -78,7 +84,11 @@ export default function LiftsScreen() {
             accessibilityRole="button"
             accessibilityLabel="Settings"
           >
-            <Text style={styles.iconGear}>⚙</Text>
+            <SymbolView
+              name={{ ios: 'gearshape.fill', android: 'settings', web: 'settings' }}
+              size={24}
+              tintColor={Colors.textMuted}
+            />
           </Pressable>
         </View>
       </View>
@@ -135,8 +145,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconPlus: { color: Colors.accent, fontSize: 32, fontWeight: '700' },
-  iconGear: { color: Colors.textMuted, fontSize: 24 },
   title: {
     color: Colors.text,
     fontFamily: Fonts.mono,
