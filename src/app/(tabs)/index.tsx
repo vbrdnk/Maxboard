@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { SymbolView } from 'expo-symbols';
 import { useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -43,6 +44,9 @@ export default function LiftsScreen() {
   const unitSystem = settings?.unitSystem ?? 'imperial';
 
   function confirmHide(exercise: Exercise) {
+    // Fire on the long-press itself (before the confirm dialog) — the touch-hold
+    // is the moment the user expects to feel. No-ops on unsupported hardware.
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert('Hide exercise?', `"${exercise.name}" will be hidden. Its data is kept and you can unhide it from Settings.`, [
       { text: 'Cancel', style: 'cancel' },
       {

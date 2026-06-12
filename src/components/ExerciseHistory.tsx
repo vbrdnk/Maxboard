@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -59,6 +60,8 @@ export function ExerciseHistory({
       notes: result.notes,
       source: 'direct',
     });
+    // Logging a PR is the app's reward moment — confirm it with a success tap.
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setFormOpen(false);
   }
 
